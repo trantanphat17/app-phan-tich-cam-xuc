@@ -7,7 +7,7 @@ from pyvi import ViTokenizer # THƯ VIỆN TIỀN XỬ LÝ TIẾNG VIỆT 🇻�
 # =============================
 # API
 # =============================
-API_KEY = "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"
+API_KEY = st.secrets["HF_API_KEY"]
 API_URL = "https://router.huggingface.co/hf-inference/models/wonrax/phobert-base-vietnamese-sentiment"
 headers = {"Authorization": f"Bearer {API_KEY}"}
 
