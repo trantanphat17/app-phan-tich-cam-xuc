@@ -26,40 +26,78 @@ def analyze(text):
 # =============================
 st.set_page_config(page_title="Phân tích Cảm xúc AI", page_icon="🧠", layout="centered")
 
+st.markdown("""
+<style>
+/* NỀN VÀ FONT CHỮ CHUNG */
+.stApp{
+    background: radial-gradient(circle at top,#0f172a,#020617);
+    color:white;
+}
+.hero{
+    text-align:center;
+    padding:40px;
+}
+.hero h1{
+    font-size:55px;
+    font-weight:800;
+    background: linear-gradient(90deg,#22c1c3,#fdbb2d);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+.hero p{
+    color:#9ca3af;
+    font-size:20px;
+}
+.result-box{
+    padding:20px;
+    border-radius:15px;
+    text-align:center;
+    font-size:22px;
+    font-weight:700;
+    margin-top: 20px;
+}
+.positive{ background:#052e16; color:#4ade80; border: 1px solid #4ade80; }
+.negative{ background:#450a0a; color:#f87171; border: 1px solid #f87171; }
+.neutral{ background:#422006; color:#facc15; border: 1px solid #facc15; }
+
+/* ========================================= */
 /* HACK GIAO DIỆN TABS - THÊM KHUNG CHO 2 NÚT TAB */
+/* ========================================= */
 div[data-baseweb="tab-list"] { 
-    gap: 15px; /* Khoảng cách giữa 2 khung */
+    gap: 15px; 
     justify-content: center; 
 }
 
 /* Đóng khung cho từng Tab */
 button[data-baseweb="tab"] {
-    border: 2px solid #475569 !important; /* Màu viền khung (xám xanh) */
-    border-radius: 10px !important;       /* Bo tròn 4 góc */
-    padding: 10px 30px !important;        /* Khoảng cách từ chữ tới viền */
+    border: 2px solid #475569 !important; 
+    border-radius: 10px !important;       
+    padding: 10px 30px !important;        
     background-color: transparent !important; 
-    color: #9ca3af !important;            /* Màu chữ mặc định */
-    transition: all 0.3s ease-in-out !important; /* Hiệu ứng mượt */
+    color: #9ca3af !important;            
+    transition: all 0.3s ease-in-out !important; 
 }
 
 /* Hiệu ứng khi di chuột vào (Hover) */
 button[data-baseweb="tab"]:hover {
-    border-color: #22c1c3 !important; /* Đổi màu viền khi đưa chuột vào */
+    border-color: #22c1c3 !important; 
     color: white !important;
 }
 
 /* Khung khi Tab đang được chọn (Active) */
 button[data-baseweb="tab"][aria-selected="true"] {
     background: linear-gradient(90deg, #1e293b, #0f172a) !important; 
-    border: 2px solid #22c1c3 !important; /* Viền sáng màu khi đang chọn */
-    color: #22c1c3 !important;            /* Chữ sáng màu */
-    box-shadow: 0 4px 15px rgba(34, 193, 195, 0.3) !important; /* Hiệu ứng phát sáng bóng đổ */
+    border: 2px solid #22c1c3 !important; 
+    color: #22c1c3 !important;            
+    box-shadow: 0 4px 15px rgba(34, 193, 195, 0.3) !important; 
 }
 
 /* Ẩn đường kẻ ngang xấu xí mặc định của Streamlit ở dưới Tab */
 div[data-baseweb="tab-highlight"], div[data-baseweb="tab-border"] { 
     display: none !important; 
 }
+</style>
+""", unsafe_allow_html=True)
 # =============================
 # PHẦN GIỚI THIỆU (HERO)
 # =============================
