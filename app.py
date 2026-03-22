@@ -92,73 +92,75 @@ tab1, tab2 = st.tabs(["⚡ Phân tích Nhanh", "📊 Phân tích File Dữ liệ
 # PHẦN 1: NHẬP VĂN BẢN (TAB 1)
 # -----------------------------
 with tab1:
-    st.write("### 💬 Phân tích Một Bình luận")
-    text = st.text_area("Nhập bình luận của bạn:", placeholder="Ví dụ: Ứng dụng xài mượt, nhiều mã giảm giá, 10 điểm!", height=120)
-    
-    if st.button("Phân tích bằng AI 🚀", key="btn_instant"):
-        if text.strip() == "":
-            st.warning("Vui lòng nhập bình luận trước khi phân tích!")
-        else:
-            with st.spinner("AI đang phân tích và tách từ..."):
-                result = analyze(text)
-                
-                if result and isinstance(result, list):
-                    label = result[0][0]["label"] 
+    with st.container(border=True):
+        st.write("### 💬 Phân tích Một Bình luận")
+        text = st.text_area("Nhập bình luận của bạn:", placeholder="Ví dụ: Ứng dụng xài mượt, nhiều mã giảm giá, 10 điểm!", height=120)
+        
+        if st.button("Phân tích bằng AI 🚀", key="btn_instant"):
+            if text.strip() == "":
+                st.warning("Vui lòng nhập bình luận trước khi phân tích!")
+            else:
+                with st.spinner("AI đang phân tích và tách từ..."):
+                    result = analyze(text)
                     
-                    if label == "POS":
-                        st.markdown(f"<div class='result-box positive'>😍 Tích Cực</div>", unsafe_allow_html=True)
-                    elif label == "NEG":
-                        st.markdown(f"<div class='result-box negative'>🤬 Tiêu Cực</div>", unsafe_allow_html=True)
+                    if result and isinstance(result, list):
+                        label = result[0][0]["label"] 
+                        
+                        if label == "POS":
+                            st.markdown(f"<div class='result-box positive'>😍 Tích Cực</div>", unsafe_allow_html=True)
+                        elif label == "NEG":
+                            st.markdown(f"<div class='result-box negative'>🤬 Tiêu Cực</div>", unsafe_allow_html=True)
+                        else:
+                            st.markdown(f"<div class='result-box neutral'>😐 Bình Thường</div>", unsafe_allow_html=True)
                     else:
-                        st.markdown(f"<div class='result-box neutral'>😐 Bình Thường</div>", unsafe_allow_html=True)
-                else:
-                    st.error("Lỗi API! Vui lòng thử lại sau vài giây hoặc kiểm tra kết nối.")
+                        st.error("Lỗi API! Vui lòng thử lại sau vài giây hoặc kiểm tra kết nối.")
 
 # -----------------------------
 # PHẦN 2: TẢI LÊN CSV (TAB 2)
 # -----------------------------
 with tab2:
-    st.write("### 📂 Phân tích Tập dữ liệu (CSV)")
-    file = st.file_uploader("Tải lên file định dạng CSV", type="csv")
-    
-    if file:
-        df = pd.read_csv(file)
-        st.write("**📋 Xem trước dữ liệu:**")
-        st.dataframe(df.head())
+    with st.container(border=True):
+        st.write("### 📂 Phân tích Tập dữ liệu (CSV)")
+        file = st.file_uploader("Tải lên file định dạng CSV", type="csv")
         
-        column = st.selectbox("👉 Chọn cột chứa bình luận cần phân tích:", df.columns)
-        
-        if st.button("Bắt đầu Phân tích Dữ liệu 🤖", key="btn_dataset"):
-            progress_bar = st.progress(0)
-            status_text = st.empty()
-            results = []
+        if file:
+            df = pd.read_csv(file)
+            st.write("**📋 Xem trước dữ liệu:**")
+            st.dataframe(df.head())
             
-            data_to_analyze = df.head(10) 
-            total_rows = len(data_to_analyze)
+            column = st.selectbox("👉 Chọn cột chứa bình luận cần phân tích:", df.columns)
             
-            for i, row in data_to_analyze.iterrows():
-                status_text.text(f"Đang phân tích dòng {i+1} / {total_rows}...")
-                text_val = str(row[column])
-                result = analyze(text_val)
+            if st.button("Bắt đầu Phân tích Dữ liệu 🤖", key="btn_dataset"):
+                progress_bar = st.progress(0)
+                status_text = st.empty()
+                results = []
                 
-                if result and isinstance(result, list):
-                    label = result[0][0]["label"]
-                    if label == "POS": star = "😍 Tích cực"
-                    elif label == "NEG": star = "🤬 Tiêu cực"
-                    else: star = "😐 Bình thường"
-                else:
-                    star = "Lỗi / Timeout"
+                data_to_analyze = df.head(10) 
+                total_rows = len(data_to_analyze)
+                
+                for i, row in data_to_analyze.iterrows():
+                    status_text.text(f"Đang phân tích dòng {i+1} / {total_rows}...")
+                    text_val = str(row[column])
+                    result = analyze(text_val)
                     
-                results.append({
-                    "Bình luận gốc": text_val,
-                    "Phân loại cảm xúc": star
-                })
+                    if result and isinstance(result, list):
+                        label = result[0][0]["label"]
+                        if label == "POS": star = "😍 Tích cực"
+                        elif label == "NEG": star = "🤬 Tiêu cực"
+                        else: star = "😐 Bình thường"
+                    else:
+                        star = "Lỗi / Timeout"
+                        
+                    results.append({
+                        "Bình luận gốc": text_val,
+                        "Phân loại cảm xúc": star
+                    })
+                    
+                    progress_bar.progress((i + 1) / total_rows)
+                    time.sleep(1.5) # Chờ API để tránh bị quá tải
                 
-                progress_bar.progress((i + 1) / total_rows)
-                time.sleep(1.5) # Chờ API để tránh bị quá tải
-            
-            status_text.empty()
-            st.success("✅ Phân tích hoàn tất!")
-            
-            result_df = pd.DataFrame(results)
-            st.dataframe(result_df)
+                status_text.empty()
+                st.success("✅ Phân tích hoàn tất!")
+                
+                result_df = pd.DataFrame(results)
+                st.dataframe(result_df)
