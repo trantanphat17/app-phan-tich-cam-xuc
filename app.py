@@ -119,7 +119,7 @@ with tab1:
 # PHẦN 2: TẢI LÊN CSV (TAB 2)
 # -----------------------------
 with tab2:
-    with st.container(border=True):
+    
         st.write("### 📂 Phân tích Tập dữ liệu (CSV)")
         file = st.file_uploader("Tải lên file định dạng CSV", type="csv")
         
