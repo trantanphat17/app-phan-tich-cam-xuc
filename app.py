@@ -22,9 +22,9 @@ def analyze(text):
         return None
 
 # =============================
-# PAGE CONFIG & CSS
+# CẤU HÌNH TRANG & GIAO DIỆN (CSS)
 # =============================
-st.set_page_config(page_title="AI Sentiment Studio", page_icon="🧠", layout="centered")
+st.set_page_config(page_title="Phân tích Cảm xúc AI", page_icon="🧠", layout="centered")
 
 st.markdown("""
 <style>
@@ -59,7 +59,7 @@ st.markdown("""
 .negative{ background:#450a0a; color:#f87171; border: 1px solid #f87171; }
 .neutral{ background:#422006; color:#facc15; border: 1px solid #facc15; }
 
-/* HACK GIAO DIỆN TABS */
+/* TÙY CHỈNH GIAO DIỆN TABS */
 div[data-baseweb="tab-list"] { gap: 20px; justify-content: center; }
 div[data-baseweb="tab"] {
     height: 60px !important; font-size: 18px !important; font-weight: bold !important;
@@ -74,30 +74,30 @@ div[data-baseweb="tab-highlight"], div[data-baseweb="tab-border"] { display: non
 """, unsafe_allow_html=True)
 
 # =============================
-# HERO SECTION
+# PHẦN GIỚI THIỆU (HERO)
 # =============================
 st.markdown("""
 <div class="hero">
-    <h1>AI Sentiment Studio</h1>
-    <p>Analyze social media comments using Artificial Intelligence</p>
+    <h1>Hệ thống Phân tích Cảm xúc AI</h1>
+    <p>Phân tích bình luận trên mạng xã hội bằng Trí tuệ Nhân tạo</p>
 </div>
 """, unsafe_allow_html=True)
 
 # =============================
-# INTERACTIVE TABS
+# CÁC TAB TƯƠNG TÁC
 # =============================
-tab1, tab2 = st.tabs(["⚡ Instant Analysis", "📊 Dataset Analysis"])
+tab1, tab2 = st.tabs(["⚡ Phân tích Nhanh", "📊 Phân tích File Dữ liệu"])
 
 # -----------------------------
-# PHẦN 1: NHẬP TEXT
+# PHẦN 1: NHẬP VĂN BẢN (TAB 1)
 # -----------------------------
 with tab1:
-    st.write("### 💬 Analyze a Comment")
-    text = st.text_area("Enter a comment:", placeholder="Ví dụ: Ứng dụng xài mượt, nhiều mã giảm giá, 10 điểm!", height=120)
+    st.write("### 💬 Phân tích Một Bình luận")
+    text = st.text_area("Nhập bình luận của bạn:", placeholder="Ví dụ: Ứng dụng xài mượt, nhiều mã giảm giá, 10 điểm!", height=120)
     
-    if st.button("Analyze with AI 🚀", key="btn_instant"):
+    if st.button("Phân tích bằng AI 🚀", key="btn_instant"):
         if text.strip() == "":
-            st.warning("Please enter a comment")
+            st.warning("Vui lòng nhập bình luận trước khi phân tích!")
         else:
             with st.spinner("AI đang phân tích và tách từ..."):
                 result = analyze(text)
@@ -106,29 +106,29 @@ with tab1:
                     label = result[0][0]["label"] 
                     
                     if label == "POS":
-                        st.markdown(f"<div class='result-box positive'>😍 Tích Cực (Positive)</div>", unsafe_allow_html=True)
+                        st.markdown(f"<div class='result-box positive'>😍 Tích Cực</div>", unsafe_allow_html=True)
                     elif label == "NEG":
-                        st.markdown(f"<div class='result-box negative'>🤬 Tiêu Cực (Negative)</div>", unsafe_allow_html=True)
+                        st.markdown(f"<div class='result-box negative'>🤬 Tiêu Cực</div>", unsafe_allow_html=True)
                     else:
-                        st.markdown(f"<div class='result-box neutral'>😐 Bình Thường (Neutral)</div>", unsafe_allow_html=True)
+                        st.markdown(f"<div class='result-box neutral'>😐 Bình Thường</div>", unsafe_allow_html=True)
                 else:
-                    st.error("Lỗi API! Vui lòng thử lại sau vài giây.")
+                    st.error("Lỗi API! Vui lòng thử lại sau vài giây hoặc kiểm tra kết nối.")
 
 # -----------------------------
-# PHẦN 2: UPLOAD CSV
+# PHẦN 2: TẢI LÊN CSV (TAB 2)
 # -----------------------------
 with tab2:
-    st.write("### 📂 Analyze Dataset (CSV)")
-    file = st.file_uploader("Upload CSV file", type="csv")
+    st.write("### 📂 Phân tích Tập dữ liệu (CSV)")
+    file = st.file_uploader("Tải lên file định dạng CSV", type="csv")
     
     if file:
         df = pd.read_csv(file)
-        st.write("**📋 Data Preview:**")
+        st.write("**📋 Xem trước dữ liệu:**")
         st.dataframe(df.head())
         
-        column = st.selectbox("👉 Select comment column to analyze:", df.columns)
+        column = st.selectbox("👉 Chọn cột chứa bình luận cần phân tích:", df.columns)
         
-        if st.button("Start Dataset Analysis 🤖", key="btn_dataset"):
+        if st.button("Bắt đầu Phân tích Dữ liệu 🤖", key="btn_dataset"):
             progress_bar = st.progress(0)
             status_text = st.empty()
             results = []
@@ -137,7 +137,7 @@ with tab2:
             total_rows = len(data_to_analyze)
             
             for i, row in data_to_analyze.iterrows():
-                status_text.text(f"Analyzing row {i+1} of {total_rows}...")
+                status_text.text(f"Đang phân tích dòng {i+1} / {total_rows}...")
                 text_val = str(row[column])
                 result = analyze(text_val)
                 
@@ -155,10 +155,10 @@ with tab2:
                 })
                 
                 progress_bar.progress((i + 1) / total_rows)
-                time.sleep(1.5)
+                time.sleep(1.5) # Chờ API để tránh bị quá tải
             
             status_text.empty()
-            st.success("✅ Analysis Complete!")
+            st.success("✅ Phân tích hoàn tất!")
             
             result_df = pd.DataFrame(results)
             st.dataframe(result_df)
