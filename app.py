@@ -92,7 +92,7 @@ tab1, tab2 = st.tabs(["⚡ Phân tích Nhanh", "📊 Phân tích File Dữ liệ
 # PHẦN 1: NHẬP VĂN BẢN (TAB 1)
 # -----------------------------
 with tab1:
-    with st.container(border=True):
+    
         st.write("### 💬 Phân tích Một Bình luận")
         text = st.text_area("Nhập bình luận của bạn:", placeholder="Ví dụ: Ứng dụng xài mượt, nhiều mã giảm giá, 10 điểm!", height=120)
         
