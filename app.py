@@ -24,7 +24,7 @@ def analyze(text):
 # =============================
 # CẤU HÌNH TRANG & GIAO DIỆN (CSS)
 # =============================
-st.set_page_config(page_title="Phân tích Cảm xúc AI", page_icon="🧠", layout="centered")
+st.set_page_config(page_title="Phân Tích Cảm Xúc", page_icon="", layout="centered")
 
 st.markdown("""
 <style>
@@ -103,7 +103,7 @@ div[data-baseweb="tab-highlight"], div[data-baseweb="tab-border"] {
 # =============================
 st.markdown("""
 <div class="hero">
-    <h1>Hệ thống Phân tích Cảm xúc AI</h1>
+    <h1>HỆ THỐNG PHÂN TÍCH CẢM XÚC</h1>
     <p>Phân tích bình luận trên mạng xã hội bằng Trí tuệ Nhân tạo</p>
 </div>
 """, unsafe_allow_html=True)
