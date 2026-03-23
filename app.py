@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 import time
 from pyvi import ViTokenizer # THƯ VIỆN TIỀN XỬ LÝ TIẾNG VIỆT 🇻🇳
+import plotly.express as px  # THƯ VIỆN VẼ BIỂU ĐỒ TRỰC QUAN
 
 # =============================
 # API
@@ -24,7 +25,7 @@ def analyze(text):
 # =============================
 # CẤU HÌNH TRANG & GIAO DIỆN (CSS)
 # =============================
-st.set_page_config(page_title="Phân Tích Cảm Xúc", page_icon="", layout="centered")
+st.set_page_config(page_title="Phân Tích Cảm Xúc", page_icon="📊", layout="centered")
 
 st.markdown("""
 <style>
@@ -71,7 +72,7 @@ div[data-baseweb="tab-list"] {
 /* Đóng khung cho từng Tab */
 button[data-baseweb="tab"] {
     border: 2px solid #475569 !important; 
-    border-radius: 10px !important;       
+    border-radius: 10px !important;        
     padding: 10px 30px !important;        
     background-color: transparent !important; 
     color: #9ca3af !important;            
@@ -98,6 +99,7 @@ div[data-baseweb="tab-highlight"], div[data-baseweb="tab-border"] {
 }
 </style>
 """, unsafe_allow_html=True)
+
 # =============================
 # PHẦN GIỚI THIỆU (HERO)
 # =============================
@@ -117,75 +119,112 @@ tab1, tab2 = st.tabs(["Phân tích Nhanh", "Phân tích File Dữ liệu"])
 # PHẦN 1: NHẬP VĂN BẢN (TAB 1)
 # -----------------------------
 with tab1:
+    st.write("Phân tích Một Bình luận")
+    text = st.text_area("Nhập bình luận của bạn:", placeholder="Ví dụ: Ứng dụng xài mượt, nhiều mã giảm giá, 10 điểm!", height=120)
     
-        st.write("Phân tích Một Bình luận")
-        text = st.text_area("Nhập bình luận của bạn:", placeholder="Ví dụ: Ứng dụng xài mượt, nhiều mã giảm giá, 10 điểm!", height=120)
-        
-        if st.button("Phân tích bằng AI", key="btn_instant"):
-            if text.strip() == "":
-                st.warning("Vui lòng nhập bình luận trước khi phân tích!")
-            else:
-                with st.spinner("AI đang phân tích và tách từ..."):
-                    result = analyze(text)
+    if st.button("Phân tích bằng AI", key="btn_instant"):
+        if text.strip() == "":
+            st.warning("Vui lòng nhập bình luận trước khi phân tích!")
+        else:
+            with st.spinner("AI đang phân tích và tách từ..."):
+                result = analyze(text)
+                
+                if result and isinstance(result, list):
+                    label = result[0][0]["label"] 
                     
-                    if result and isinstance(result, list):
-                        label = result[0][0]["label"] 
-                        
-                        if label == "POS":
-                            st.markdown(f"<div class='result-box positive'>Tích Cực</div>", unsafe_allow_html=True)
-                        elif label == "NEG":
-                            st.markdown(f"<div class='result-box negative'>Tiêu Cực</div>", unsafe_allow_html=True)
-                        else:
-                            st.markdown(f"<div class='result-box neutral'>Bình Thường</div>", unsafe_allow_html=True)
+                    if label == "POS":
+                        st.markdown(f"<div class='result-box positive'>Tích Cực</div>", unsafe_allow_html=True)
+                    elif label == "NEG":
+                        st.markdown(f"<div class='result-box negative'>Tiêu Cực</div>", unsafe_allow_html=True)
                     else:
-                        st.error("Lỗi API! Vui lòng thử lại sau vài giây hoặc kiểm tra kết nối.")
+                        st.markdown(f"<div class='result-box neutral'>Bình Thường</div>", unsafe_allow_html=True)
+                else:
+                    st.error("Lỗi API! Vui lòng thử lại sau vài giây hoặc kiểm tra kết nối.")
 
 # -----------------------------
 # PHẦN 2: TẢI LÊN CSV (TAB 2)
 # -----------------------------
 with tab2:
+    st.write("Phân tích Tập dữ liệu (CSV)")
+    file = st.file_uploader("Tải lên file định dạng CSV", type="csv")
     
-        st.write("Phân tích Tập dữ liệu (CSV)")
-        file = st.file_uploader("Tải lên file định dạng CSV", type="csv")
+    if file:
+        df = pd.read_csv(file)
+        st.write("**Xem trước dữ liệu:**")
+        st.dataframe(df.head())
         
-        if file:
-            df = pd.read_csv(file)
-            st.write("**Xem trước dữ liệu:**")
-            st.dataframe(df.head())
+        column = st.selectbox("Chọn cột chứa bình luận cần phân tích:", df.columns)
+        
+        if st.button("Bắt đầu Phân tích Dữ liệu", key="btn_dataset"):
+            progress_bar = st.progress(0)
+            status_text = st.empty()
+            results = []
             
-            column = st.selectbox("Chọn cột chứa bình luận cần phân tích:", df.columns)
+            data_to_analyze = df.head(10) # Giới hạn 10 dòng demo
+            total_rows = len(data_to_analyze)
             
-            if st.button("Bắt đầu Phân tích Dữ liệu", key="btn_dataset"):
-                progress_bar = st.progress(0)
-                status_text = st.empty()
-                results = []
+            for i, row in data_to_analyze.iterrows():
+                status_text.text(f"Đang phân tích dòng {i+1} / {total_rows}...")
+                text_val = str(row[column])
+                result = analyze(text_val)
                 
-                data_to_analyze = df.head(10) 
-                total_rows = len(data_to_analyze)
-                
-                for i, row in data_to_analyze.iterrows():
-                    status_text.text(f"Đang phân tích dòng {i+1} / {total_rows}...")
-                    text_val = str(row[column])
-                    result = analyze(text_val)
+                if result and isinstance(result, list):
+                    label = result[0][0]["label"]
+                    if label == "POS": star = "Tích cực"
+                    elif label == "NEG": star = "Tiêu cực"
+                    else: star = "Bình thường"
+                else:
+                    star = "Lỗi / Timeout"
                     
-                    if result and isinstance(result, list):
-                        label = result[0][0]["label"]
-                        if label == "POS": star = "Tích cực"
-                        elif label == "NEG": star = "Tiêu cực"
-                        else: star = "Bình thường"
-                    else:
-                        star = "Lỗi / Timeout"
-                        
-                    results.append({
-                        "Bình luận gốc": text_val,
-                        "Phân loại cảm xúc": star
-                    })
-                    
-                    progress_bar.progress((i + 1) / total_rows)
-                    time.sleep(1.5) # Chờ API để tránh bị quá tải
+                results.append({
+                    "Bình luận gốc": text_val,
+                    "Phân loại cảm xúc": star
+                })
                 
-                status_text.empty()
-                st.success("Phân tích hoàn tất!")
-                
-                result_df = pd.DataFrame(results)
-                st.dataframe(result_df)
+                progress_bar.progress((i + 1) / total_rows)
+                time.sleep(1.5) # Chờ API để tránh bị quá tải
+            
+            status_text.empty()
+            st.success("Phân tích hoàn tất!")
+            
+            # 1. Hiển thị bảng dữ liệu
+            result_df = pd.DataFrame(results)
+            st.dataframe(result_df, use_container_width=True)
+            
+            # ==========================================
+            # 2. VẼ BIỂU ĐỒ TRỰC QUAN HÓA (PLOTLY PIE CHART)
+            # ==========================================
+            st.markdown("Tổng quan Cảm xúc")
+            
+            # Đếm số lượng từng loại cảm xúc
+            sentiment_counts = result_df["Phân loại cảm xúc"].value_counts().reset_index()
+            sentiment_counts.columns = ["Cảm xúc", "Số lượng"]
+            
+            # Thiết lập màu sắc đồng bộ với CSS của bạn
+            color_discrete_map = {
+                "Tích cực": "#4ade80",   # Xanh lá
+                "Tiêu cực": "#f87171",   # Đỏ
+                "Bình thường": "#facc15", # Vàng
+                "Lỗi / Timeout": "#9ca3af" # Xám
+            }
+            
+            # Tạo Pie chart
+            fig = px.pie(
+                sentiment_counts, 
+                values="Số lượng", 
+                names="Cảm xúc",
+                color="Cảm xúc",
+                color_discrete_map=color_discrete_map,
+                hole=0.4 # Biến thành dạng Donut chart nhìn hiện đại hơn
+            )
+            
+            # Tùy chỉnh hiển thị của biểu đồ
+            fig.update_traces(textposition='inside', textinfo='percent+label')
+            fig.update_layout(
+                paper_bgcolor="rgba(0,0,0,0)", # Làm trong suốt nền biểu đồ
+                plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="white")
+            )
+            
+            # Hiển thị biểu đồ lên Streamlit
+            st.plotly_chart(fig, use_container_width=True)
