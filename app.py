@@ -145,7 +145,7 @@ with tab1:
 # -----------------------------
 with tab2:
     
-        st.write("###Phân tích Tập dữ liệu (CSV)")
+        st.write("Phân tích Tập dữ liệu (CSV)")
         file = st.file_uploader("Tải lên file định dạng CSV", type="csv")
         
         if file:
