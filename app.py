@@ -118,7 +118,7 @@ tab1, tab2 = st.tabs(["Phân tích Nhanh", "Phân tích File Dữ liệu"])
 # -----------------------------
 with tab1:
     
-        st.write("###Phân tích Một Bình luận")
+        st.write("Phân tích Một Bình luận")
         text = st.text_area("Nhập bình luận của bạn:", placeholder="Ví dụ: Ứng dụng xài mượt, nhiều mã giảm giá, 10 điểm!", height=120)
         
         if st.button("Phân tích bằng AI", key="btn_instant"):
