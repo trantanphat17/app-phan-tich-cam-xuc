@@ -25,7 +25,7 @@ def analyze(text):
 # =============================
 # CẤU HÌNH TRANG & GIAO DIỆN (CSS)
 # =============================
-st.set_page_config(page_title="Phân Tích Cảm Xúc", page_icon="📊", layout="centered")
+st.set_page_config(page_title="Phân Tích Cảm Xúc", page_icon="", layout="centered")
 
 st.markdown("""
 <style>
