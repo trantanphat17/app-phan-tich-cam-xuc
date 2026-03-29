@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import pandas as pd
 import time
-import concurrent.futures # THƯ VIỆN ĐỂ CHẠY SONG SONG
+import concurrent.futures 
 from pyvi import ViTokenizer 
 import plotly.express as px  
 import re 
