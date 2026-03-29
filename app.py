@@ -138,6 +138,15 @@ with tab2:
             # SỬA LỖI CẮT CHỮ Ở BẢNG KẾT QUẢ
             with st.container(height=400):
                 st.table(result_df)
+            # tai xuong    
+            csv = result_df.to_csv(index=False).encode('utf-8-sig') # utf-8-sig để Excel không lỗi font
+            st.download_button(
+                label="Tải file kết quả (.CSV)",
+                data=csv,
+                file_name="ket_qua_phan_tich.csv",
+                mime="text/csv",
+                type="primary"
+            )
 
             # --- Biểu đồ Pie ---
             st.markdown("### Tổng quan Cảm xúc")
