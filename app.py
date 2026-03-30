@@ -8,12 +8,16 @@ import plotly.express as px
 import re 
 
 # =============================
-# API
+# KHỐI 1: CẤU HÌNH API GIAO TIẾP VỚI ĐÁM MÂY (HUGGING FACE)
 # =============================
+# Lấy khóa bảo mật từ file ẩn .streamlit/secrets.toml để tránh lộ API Key ra ngoài
 API_KEY = st.secrets["HF_API_KEY"]
 API_URL = "https://router.huggingface.co/hf-inference/models/wonrax/phobert-base-vietnamese-sentiment"
 headers = {"Authorization": f"Bearer {API_KEY}"}
 
+# =============================
+# KHỐI 2: CÁC HÀM TIỀN XỬ LÝ VÀ PHÂN TÍCH (LOGIC LÕI)
+# =============================
 def clean_text(text):
     text = str(text) 
     text = re.sub(r'http\S+', '', text)
@@ -33,7 +37,7 @@ def analyze(text):
     except: return None
 
 # =============================
-# CẤU HÌNH TRANG & GIAO DIỆN (CSS)
+# KHỐI 3: CẤU HÌNH TRANG & GIAO DIỆN (CSS CUSTOM)
 # =============================
 st.set_page_config(page_title="Phân Tích Cảm Xúc", page_icon="", layout="centered")
 
@@ -62,10 +66,11 @@ th, td { white-space: normal !important; word-wrap: break-word !important; }
 
 st.markdown("""<div class="hero"><h1>HỆ THỐNG PHÂN TÍCH CẢM XÚC</h1><p>Phân tích bình luận trên mạng xã hội bằng Trí tuệ Nhân tạo</p></div>""", unsafe_allow_html=True)
 
+# Chia giao diện thành 2 phân hệ (Tabs)
 tab1, tab2 = st.tabs(["Phân tích Nhanh", "Phân tích File Dữ liệu"])
 
 # -----------------------------
-# PHẦN 1: NHẬP VĂN BẢN (TAB 1)
+# KHỐI 4: CHỨC NĂNG PHÂN TÍCH MỘT CÂU TỨC THỜI (TAB 1)
 # -----------------------------
 with tab1:
     st.write("Phân tích Một Bình luận")
@@ -81,7 +86,7 @@ with tab1:
                     else: st.markdown(f"<div class='result-box neutral'>Bình Thường</div>", unsafe_allow_html=True)
 
 # -----------------------------
-# PHẦN 2: TẢI LÊN CSV (TAB 2)
+# KHỐI 5: CHỨC NĂNG PHÂN TÍCH FILE CSV & TỐI ƯU ĐA LUỒNG (TAB 2)
 # -----------------------------
 with tab2:
     st.write("Phân tích Tập dữ liệu (CSV)")
@@ -119,7 +124,8 @@ with tab2:
 
             processed_count = 0
             
-            # XỬ LÝ ĐA LUỒNG (SONG SONG) GIÚP CHẠY NHANH
+            # CƠ CHẾ XỬ LÝ ĐA LUỒNG (MULTI-THREADING) ---
+            # Mở 5 luồng hoạt động song song để gửi dữ liệu lên Hugging Face cùng lúc
             with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
                 for text_val, sentiment in zip(data_to_analyze, executor.map(process_single_row, data_to_analyze)):
                     results.append({
